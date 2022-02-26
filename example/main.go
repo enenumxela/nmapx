@@ -3,12 +3,23 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"os"
 
 	"github.com/enenumxela/nmapx/pkg/nmapx"
 )
 
 func main() {
-	scanData, err := nmapx.Parse("sample.xml")
+	xmlFile, err := os.Open("sample.xml")
+	if err != nil {
+		return
+	}
+
+	defer xmlFile.Close()
+
+	xmlData, _ := ioutil.ReadAll(xmlFile)
+
+	scanData, err := nmapx.Parse(xmlData)
 	if err != nil {
 		fmt.Println(err)
 		return
