@@ -2,6 +2,7 @@ package nmapx
 
 import (
 	"encoding/xml"
+	"io/ioutil"
 	"strconv"
 	"time"
 )
@@ -42,6 +43,8 @@ func (t *Timestamp) UnmarshalXMLAttr(attr xml.Attr) (err error) {
 }
 
 type NmapRun struct {
+	XMLName xml.Name `xml:"nmaprun"`
+
 	Scanner          string         `xml:"scanner,attr"           json:"scanner"`
 	Args             string         `xml:"args,attr"              json:"args"`
 	Start            Timestamp      `xml:"start,attr"             json:"start"`
@@ -60,6 +63,13 @@ type NmapRun struct {
 	Hosts            []Host         `xml:"host"                   json:"hosts"`
 	Targets          []Target       `xml:"target"                 json:"targets"`
 	RunStats         RunStats       `xml:"runstats"               json:"runstats"`
+
+	Raw []byte `xml:"-"`
+}
+
+// ToFile writes a Run as XML into the specified file path.
+func (n NmapRun) ToFile(filePath string) error {
+	return ioutil.WriteFile(filePath, n.Raw, 0666)
 }
 
 type ScanInfo struct {
@@ -226,14 +236,14 @@ type OsClass struct {
 	Vendor   string `xml:"vendor,attr"          json:"vendor"`
 	OsGen    string `xml:"osgen,attr"`
 	Type     string `xml:"type,attr"            json:"type"`
-	Accuracy string `xml:"accurancy,attr"       json:"accurancy"`
+	Accuracy int    `xml:"accurancy,attr"       json:"accurancy"`
 	OsFamily string `xml:"osfamily,attr"        json:"osfamily"`
 	CPEs     []CPE  `xml:"cpe"                  json:"cpes"`
 }
 
 type OsMatch struct {
 	Name      string    `xml:"name,attr"          json:"name"`
-	Accuracy  string    `xml:"accuracy,attr"      json:"accuracy"`
+	Accuracy  int       `xml:"accuracy,attr"      json:"accuracy"`
 	Line      string    `xml:"line,attr"          json:"line"`
 	OsClasses []OsClass `xml:"osclass"            json:"osclasses"`
 }

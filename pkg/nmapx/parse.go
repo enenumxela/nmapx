@@ -5,7 +5,9 @@ import (
 )
 
 func Parse(input []byte) (output *NmapRun, err error) {
-	output = &NmapRun{}
+	output = &NmapRun{
+		Raw: input,
+	}
 
 	if err = xml.Unmarshal(input, output); err != nil {
 		return
